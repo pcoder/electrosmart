@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int REQUEST_ACCESS_FINE_AND_BACKGROUND_LOCATION = 2;
     // used to identify the background location permission request in processRequestPermissionsResult
     public static final int REQUEST_ACCESS_BACKGROUND_LOCATION = 3;
+    public static final int REQUEST_SCHEDULE_EXACT_ALARM = 4;
 
     private static final String TAG = "MainActivity";
     // A reference to the user profile

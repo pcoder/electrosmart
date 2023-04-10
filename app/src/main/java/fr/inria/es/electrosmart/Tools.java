@@ -34,8 +34,10 @@
 package fr.inria.es.electrosmart;
 
 
+import static android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM;
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -483,6 +485,21 @@ public class Tools {
         } else {
             return true;
         }
+    }
+
+    public static boolean isScheduleExactAlarmGranted(@NonNull Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager =
+                    (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager.canScheduleExactAlarms()) {
+                return true;
+            } else {
+                int permissionCheck = ContextCompat.checkSelfPermission(context,
+                        ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                return permissionCheck == PackageManager.PERMISSION_GRANTED;
+            }
+        }
+        return true;
     }
 
     /**
@@ -1388,6 +1405,42 @@ public class Tools {
         }
     }
 
+    public static void grantScheduleExactAlarmToApp(Context context, AppCompatActivity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Log.d(TAG, "grantScheduleExactAlarmToApp: SDK >= S");
+            SharedPreferences settings = context.getSharedPreferences(Const.SHARED_PREF_FILE,
+                    Context.MODE_PRIVATE);
+            boolean hasUserDeniedScheduleExactAlarmPermission = settings.getBoolean(
+                    Const.USER_DENIED_SCHEDULE_EXACT_LOCATION_PERMISSION, false);
+
+                Log.d(TAG, "grantScheduleExactAlarmToApp: foreground location permission already granted");
+                if (Tools.isScheduleExactAlarmGranted(context)) {
+                    // App can access location both in the foreground and in the background.
+                    Log.d(TAG, "grantScheduleExactAlarmToApp: App can access both foreground and " +
+                            "background location");
+                } else {
+                    // Check if user denied and chose never ask again. In such case, take the user
+                    // to device's app settings to change permissions otherwise request the
+                    // schedule exact alarm permissions
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                            ACTION_REQUEST_SCHEDULE_EXACT_ALARM) &&
+                            hasUserDeniedScheduleExactAlarmPermission) {
+                        Log.d(TAG, "grantScheduleExactAlarmToApp: fall back to Application Settings.");
+                        // user denied flagging NEVER ASK AGAIN
+                        // We fallback to using the application details settings and let the user
+                        // enable the permission.
+                        Tools.showAppSettingsActivity(context);
+                    } else {
+                        Log.d(TAG, "grantScheduleExactAlarmToApp: ask for the background location permission");
+                        ActivityCompat.requestPermissions(activity, new String[]{
+                                        ACTION_REQUEST_SCHEDULE_EXACT_ALARM},
+                                MainActivity.REQUEST_SCHEDULE_EXACT_ALARM);
+                    }
+                }
+            }
+
+    }
+
     /**
      * Method to call when a permission result arrives with the callback
      * ActivityCompat.onRequestPermissionsResult(). This method is used to set the three shared
@@ -1414,11 +1467,14 @@ public class Tools {
         // If request is cancelled, the result arrays are empty.
         if ((requestCode == MainActivity.REQUEST_ACCESS_FINE_LOCATION) ||
                 (requestCode == MainActivity.REQUEST_ACCESS_BACKGROUND_LOCATION) ||
-                (requestCode == MainActivity.REQUEST_ACCESS_FINE_AND_BACKGROUND_LOCATION)) {
+                (requestCode == MainActivity.REQUEST_ACCESS_FINE_AND_BACKGROUND_LOCATION) ||
+                requestCode == MainActivity.REQUEST_SCHEDULE_EXACT_ALARM) {
             Log.d(TAG, "processRequestPermissionsResult: we enter the if condition");
+            Log.d(TAG, "requestCode: " + requestCode);
             boolean fineLocation = false;
             boolean coarseLocation = false;
             boolean backgroundLocation = false;
+            boolean scheduleExactAlarm = false;
             for (int i = 0; i < grantResults.length; i++) {
                 Log.d(TAG, "processRequestPermissionsResult: permissions[" + i + "]=" + permissions[i]);
                 Log.d(TAG, "processRequestPermissionsResult: grantResults[" + i + "]=" + grantResults[i]);
@@ -1447,9 +1503,20 @@ public class Tools {
                         Log.d(TAG, "processRequestPermissionsResult Permission ACCESS_BACKGROUND_LOCATION denied!");
                         edit.putBoolean(Const.USER_DENIED_LOCATION_PERMISSION_BACKGROUND, true).apply();
                     }
-
+                } else if (permissions[i].equals(Manifest.permission.SCHEDULE_EXACT_ALARM)) {
+                    scheduleExactAlarm = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                    if (scheduleExactAlarm) {
+                        Log.d(TAG, "processRequestPermissionsResult Permission SCHEDULE_EXACT_ALARM granted!");
+                    } else {
+                        Log.d(TAG, "processRequestPermissionsResult Permission SCHEDULE_EXACT_ALARM denied!");
+                        edit.putBoolean(Const.USER_DENIED_SCHEDULE_EXACT_LOCATION_PERMISSION, true).apply();
+                    }
                 }
             }
+        }
+
+        if (requestCode == MainActivity.REQUEST_SCHEDULE_EXACT_ALARM) {
+            Log.d(TAG, "processRequestPermissionsResult: we enter the if condition REQUEST_SCHEDULE_EXACT_ALARM");
         }
     }
 
