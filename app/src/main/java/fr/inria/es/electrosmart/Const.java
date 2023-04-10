@@ -602,6 +602,7 @@ public class Const {
     public static final String USER_DENIED_LOCATION_PERMISSION_BACKGROUND = "user_denied_location_permission_background";
     public static final String USER_DENIED_FINE_LOCATION_PERMISSION_FOREGROUND = "user_denied_fine_location_permission";
     public static final String USER_DENIED_COARSE_LOCATION_PERMISSION_FOREGROUND = "user_denied_coarse_location_permission";
+    public static final String USER_DENIED_SCHEDULE_EXACT_LOCATION_PERMISSION = "user_denied_schedule_exact_location_permission";
     /* variable used to correctly restore the WIFI and BT card to its initial state after a scan */
     public static final String WAS_WIFI_ENABLED_BEFORE_SCAN = "was_wifi_enabled_before_scan";
     public static final String WAS_BT_ENABLED_BEFORE_SCAN = "was_bt_enabled_before_scan";

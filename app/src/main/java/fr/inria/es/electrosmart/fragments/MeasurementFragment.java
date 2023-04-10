@@ -137,6 +137,7 @@ public class MeasurementFragment extends MainActivityFragment {
     private View errorView;
     // singleton OnClickListeners that handle what to do when no location is of device is off
     private View.OnClickListener noLocationToDeviceOnClickListener;
+    private View.OnClickListener noScheduleExactAlarmOnClickListener;
     // singleton OnClickListeners that handle what to do when no location to the app is denied
     private View.OnClickListener noLocationToAppOnClickListener;
     // The list view that shows signal details
@@ -673,6 +674,12 @@ public class MeasurementFragment extends MainActivityFragment {
             startActivity(viewIntent);
         };
 
+        noScheduleExactAlarmOnClickListener = v -> {
+            Intent viewIntent = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+            viewIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(viewIntent);
+        };
+
         /*
          *   called when the group views are scrolled, the sequence of event is
          *   start scrolling -> call setOnScrollListener -> call onScroll (as long as the scroll event
@@ -918,6 +925,13 @@ public class MeasurementFragment extends MainActivityFragment {
             explanation_text_view.setText(R.string.error_no_device_location_explanation);
             errorView.setVisibility(View.VISIBLE);
             errorView.setOnClickListener(noLocationToDeviceOnClickListener);
+        } else if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !Tools.isScheduleExactAlarmGranted(mContext) && mMeasurementMode == MeasurementMode.LIVE) {
+            TextView title_text_view = errorView.findViewById(R.id.title_text_view);
+            TextView explanation_text_view = errorView.findViewById(R.id.explanation_text_view);
+            title_text_view.setText("Alarm Permission Error");
+            explanation_text_view.setText("No Schedule Exact Alarm Permission Granted");
+            errorView.setVisibility(View.VISIBLE);
+            errorView.setOnClickListener(noScheduleExactAlarmOnClickListener);
         } else {
             errorView.setVisibility(View.GONE);
         }

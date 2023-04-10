@@ -615,6 +615,9 @@
     <string name="onboarding_location_permission_explanation_foreground_api31">We need to ask you
         &lt;b>two&lt;/b> authorizations before running the app.&lt;br/>&lt;br/> First, &lt;b>we need to access your precise location&lt;/b>
         to measure your exposure while you use the app.</string>
+   <string name="onboarding_schedule_exact_alarm_explanation_api32">Then, we need permissions to make
+        &lt;b>periodic measures&lt;/b> of your environment so that you can be alerted when the exposure exceeds certain level.
+      Also, the measures allow you &lt;b>to have a record of all exposures&lt;/b> made in the past.</string>
     <string name="onboarding_location_permission_explanation_background_api30">Last, <b>we need to
         access your location in background</b> if you want to have daily statistics and alerts in
         case of important changes in your environment.\n\nWe optimized the app so that it has no
@@ -623,7 +626,7 @@
         while using the app. Some features will be disabled.</string>
     <string name="onboarding_error_no_app_location">Without location permission, the app cannot work
         properly.</string>
-    <string name="onboarding_error_no_app_location_api31">Without &lt;b>precise&lt;/b> location permission,
+    <string name="onboarding_error_no_app_location_api31">Without &lt;b>precise&lt;/b> locasstion permission,
         the app cannot work properly.</string>
 
     <string name="onboarding_segment_start_electrosmart">Start ElectroSmart</string>

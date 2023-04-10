@@ -69,7 +69,7 @@ public class OnBoardingActivity extends AppCompatActivity {
 
     // IMPORTANT: update the number of fragments according to the number of uniquely
     // defined fragments below
-    private static final int NB_FRAGMENTS = 6;
+    private static final int NB_FRAGMENTS = 7;
     // Uniquely defines the fragments
     //private static final int EMAIL_FRAGMENT_ID = 0;
     private static final int LOCATION_FRAGMENT_ID = 0;
@@ -78,6 +78,7 @@ public class OnBoardingActivity extends AppCompatActivity {
     private static final int ONBOARDING_DONE_FRAGMENT_ID = 3;
     private static final int LOC_ERROR_FOREGROUND_ONLY_FRAGMENT_ID = 4;
     private static final int LOC_ERROR_NO_LOCALISATION_FRAGMENT_ID = 5;
+    private static final int SCHEDULE_EXACT_ALARM_FRAGMENT_ID = 6;
 
     // Used to decide whether to show the location fragment when there is no granted
     // location permission. We show it on first app start only. However, we do not persist this
@@ -85,6 +86,7 @@ public class OnBoardingActivity extends AppCompatActivity {
     // location permission. This is a good strategy to avoid showing an error fragment after
     // a long period. It is better to start with an explanation.
     private static boolean shouldShowLocationFragment = false;
+    private static boolean shouldShowScheduleExactAlarmFragment = false;
 
     // This variable take as value the uniquely defined fragments ID above.
     // private static int currently_show_fragment = -1;
@@ -159,6 +161,49 @@ public class OnBoardingActivity extends AppCompatActivity {
                 mEditTextEmail.setText(mUserProfile.getEmail());
             }
         };*/
+
+        // We create the SCHEDULE_EXACT_ALARM strategy
+        mOnBoardingFragmentStrategies[SCHEDULE_EXACT_ALARM_FRAGMENT_ID] = new OnBoardingFragmentStrategy() {
+            AppCompatButton mButtonAuthorize;
+
+            @Override
+            public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container) {
+
+                ViewGroup view = (ViewGroup) inflater.inflate(
+                        R.layout.fragment_onboarding_schedule_exact_alarm_api_32, container, false
+                );
+
+                mButtonAuthorize = view.findViewById(R.id.btn_authorize);
+
+                // wrong lint warning, we enter this portion of code only for SDK R+
+                mButtonAuthorize.setText(getPackageManager().getBackgroundPermissionOptionLabel());
+
+                mButtonAuthorize.setOnClickListener(v -> {
+                    Log.d(TAG, "onClick: Authorize clicked SCHEDULE_EXACT_ALARM_FRAGMENT_ID");
+                    shouldShowScheduleExactAlarmFragment = true;
+                    Tools.grantScheduleExactAlarmToApp(OnBoardingActivity.this, OnBoardingActivity.this);
+                });
+
+
+                return view;
+            }
+
+            @Override
+            public void onLeft() {
+                Log.d(TAG, "onLeft: SCHEDULE_EXACT_ALARM_FRAGMENT_ID");
+            }
+
+            @Override
+            public void onShown() {
+                Log.d(TAG, "onShown: SCHEDULE_EXACT_ALARM_FRAGMENT_ID");
+                closeSoftKeyboard();
+            }
+
+            @Override
+            public int getFragmentId() {
+                return SCHEDULE_EXACT_ALARM_FRAGMENT_ID;
+            }
+        };
 
         // We create the LOCATION_FRAGMENT_ID strategy
         mOnBoardingFragmentStrategies[LOCATION_FRAGMENT_ID] = new OnBoardingFragmentStrategy() {
@@ -824,6 +869,13 @@ public class OnBoardingActivity extends AppCompatActivity {
                     Log.d(TAG, "checkPermissionAndSDKAndLoadFragment: wasInitialFragmentShown false");
                     loadFragment(LOCATION_FRAGMENT_ID);
                 }
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (shouldShowScheduleExactAlarmFragment) {
+                Log.d(TAG, "checkPermissionAndSDKAndLoadFragment: shouldShowScheduleExactAlarmFragment true");
+                loadFragment(SCHEDULE_EXACT_ALARM_FRAGMENT_ID);
             }
         }
     }
