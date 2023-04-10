@@ -106,6 +106,10 @@ public final class BluetoothMonitor {
      */
     public static void run() {
         Log.d(TAG, "run BluetoothMonitor");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Log.d(TAG, "API >= S (Android 12, API 31+) detected. TODO: check if bluetooth scan permission is granted");
+            return;
+        }
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (Tools.isAccessFineLocationGranted(MainApplication.getContext()) && bluetoothAdapter != null) {
             if (MeasurementScheduler.schedulerMode == MeasurementScheduler.SchedulerMode.BACKGROUND) {

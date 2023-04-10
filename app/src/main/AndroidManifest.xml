@@ -27,6 +27,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Needed for api 31+
+    See https://developer.android.com/guide/topics/connectivity/bluetooth/permissions-->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+
     <!-- permissions for the SyncAdapter framework -->
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
