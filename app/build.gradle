@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId 'fr.inria.es.electrosmart'
@@ -9,7 +9,7 @@ android {
         minSdkVersion 16 // JELLY_BEAN
         // Kitkat 20, L 21, M 23, N 24, O 26, P 28, Q/Android 10: 29, R/Android 11: 30,
         // S/Android 12: 31
-        targetSdkVersion 30
+        targetSdkVersion 33
 
 
         vectorDrawables.useSupportLibrary = true
