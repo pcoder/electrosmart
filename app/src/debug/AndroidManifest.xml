@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.inria.es.electrosmart">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- ################ NORMAL PERMISSIONS ########################## -->
     <!-- WRITE_EXTERNAL_STORAGE is considered dangerous only starting with 23 -->
